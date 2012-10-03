@@ -1,24 +1,14 @@
 <?php
-/**
- * Require the library
- */
-require 'PHPTail.php';
-/**
- * Initilize a new instance of PHPTail
- * @var PHPTail
- */
-$tail = new PHPTail('/var/www/or/logs/access.log');
 
-/**
- * We're getting an AJAX call
- */
+require 'PHPTail.php';
+
+$log = '/var/www/or/logs/access.log';
+
 if(isset($_GET['ajax']))
 {
-  echo getNewLines($_GET['lastsize'], $_GET['grep'], $_GET['invert']);
+  echo getNewLines($log, $_GET['lastsize'], $_GET['grep'], $_GET['invert']);
   die();
 }
-/**
- * Regular GET/POST call, print out the GUI
- */
-generateGUI();
+
+generateGUI($log);
 ?>

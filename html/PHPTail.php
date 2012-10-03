@@ -1,9 +1,9 @@
 <?php
 
 // Эта функция отвечает за получение последней строки из файла журнала
-function getNewLines($lastFetchedSize, $grepKeyword, $invert)
+function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 {
-  $log = '';
+  
   $maxSizeToLoad = 2097152;
   $updateTime = 2000;
 
@@ -56,7 +56,7 @@ function getNewLines($lastFetchedSize, $grepKeyword, $invert)
 }
 
  // Эта функция будет распечатать необходимый HTML / CSS / JS
- function generateGUI() {
+ function generateGUI($log) {
  ?>
  <!DOCTYPE html">
  <html>
