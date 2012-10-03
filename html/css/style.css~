@@ -205,7 +205,7 @@ nav ul li a:hover{
         -moz-transition: color 0.8s ease;
         -o-transition: color 0.8s ease;}
 
-.go_web:hover{color:#717171;
+.go_web:hover{color:#14801c;
         -webkit-transition: color 0.8s ease;
         -moz-transition: color 0.8s ease;
         -o-transition: color 0.8s ease;}

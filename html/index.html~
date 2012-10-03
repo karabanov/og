@@ -16,15 +16,38 @@
 </header>
 <nav>
   <ul>
-    <li><a href="index.php">Список Vlan-ов<a/></li>
+    <li><a href="index.php">Параметры<a/></li>
   </ul>
 </nav>
-<h2 style="background: #f69b52; border: 1px solid #f69b52; float: left; max-width: 250px; border-radius: 5px 5px 0 0; font: bold 15px Verdana, Arial, Helvetica, sans-serif; border-bottom: 0; margin-bottom: -1px; padding: 5px 9px 6px; position: relative; display: block; top: -1px;   bottom: 0; left -1px;">Внимание!</h2><br /><div style="background: #f69b52; border: 1px solid #f69b52; clear: left; border-radius: 0 5px 5px 5px; font: 14px Arial, Helvetica, sans-serif;   padding: 10px 9px; min-height: 100px; position: relative; z-index: 1000;">Уважаемые начинающие пользователи, никогда не скачивайте документацию и софт у которого открыт исходный код с варезных сайтов! У каждого OpenSource проекта есть если уж не официальный сайт, то страница на sourceforge.net или code.google.com есть точно. Делать этого не нужно, так как на варезном сайте скорее всего лежит устаревшая версия или версия снабжённая вредоносным кодом. Уважайте себя. Не занимайтесь поиском сферического коня в вакууме, и последующим выкачиванием его из интернета посредствам отправки SMS сообщения на короткий номер.</div>
+
+<h2 class="error host_name"><a href="#">Коммунальная 44а --> 192.168.20.115</a></h2>
+<a href="#"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_device_link"></a>
+<div class="error message_body">[Eth-Header; type: 0x8100] [802.1q; VLAN: 2; type: 0x0800] [IP] --QinQ-->
+[Eth-Header; type: 0x88a8] [802.1ad; VLAN: 3015; type: 0x8100] [802.1q; VLAN: 2; type: 0x0800] [IP]
+</div>
+
+<h2 class="rayon info host_name"><a href="#">Коммунальная 44а --> 192.168.20.115</a></h2>
+<a href="#"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_device_link"></a>
+<div class="rayon info message_body">
+May 8 21:48:33 felix2 dhcpd:    to which interface eth0 is attached. **s
+</div>
+
+<h2 class="warning host_name"><a href="#">Коммунальная 44а --> 192.168.20.115</a></h2>
+<a href="#"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_device_link"></a>
+<div class="warning message_body">
+09-20/13:32:19 ERROR [Thread-98] DlinkGateWorker - error: Sourced file: inline evaluation of: ``import 
+</div>
+
+<h2 class="notice host_name"><a href="#">Коммунальная 44а --> 192.168.20.115</a></h2>
+<a href="#"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_device_link"></a>
+<div class="notice message_body">
+09-20/13:32:19 ERROR [Thread-98] DlinkGateWorker - error: Sourced file: inline evaluation of: ``import 
+</div>
 
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <footer>
   <div class="copyright">
-    <p><strong>Операция «Осознанный риск» вступила в активную фазу 1.08.2012 идейный руководитель Григорчук А.С. исполнитель Карабанов А.А</strong></p>
+    <p><strong>Операция «Острый глаз» вступила в активную фазу 2.10.2012 идейный руководитель Григорчук А.С. исполнитель Карабанов А.А</strong></p>
     <p>&copy; 2011 «Александр Карабанов»</p>
   </div>
 </footer>
