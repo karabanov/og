@@ -2,7 +2,7 @@
 
 require 'PHPTail.php';
 
-$log = '/var/www/or/logs/access.log';
+$log = '/var/log/dlink.log';
 
 if(isset($_GET['ajax']))
 {

@@ -89,7 +89,7 @@ nav ul {
 
 nav ul li {
   float:left;
-  margin:6 6px;
+  margin:6px 6px;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -156,19 +156,32 @@ nav ul li a:hover{
 #dtable td.link{background:#5eb15e; border-radius: 50px;}
 #dtable td.no_link{background:#ad4b4b; border-radius: 50px;}
 
-.rayon {border: 2px double;}
 
-.warning {background: #f1ce78;
-          border: 1px solid #f69b52;}
 
-.notice {background: #d5cbcb;
-       border: 1px solid #373434;}
 
-.info {background: #9af185;
-       border: 1px solid #26a009;}
+.rayon {
+  border: 2px double;
+}
 
-.error {background: #f68c8c;
-        border: 1px solid #f60d0d;}
+.warning {
+  background: #f1ce78;
+  border: 1px solid #f69b52;
+}
+
+.notice {
+  background: #d5cbcb;
+  border: 1px solid #373434;
+}
+
+.info {
+  background: #9af185;
+  border: 1px solid #26a009;
+}
+
+.error {
+  background: #f68c8c;
+  border: 1px solid #f60d0d;
+}
 
 .host_name {
             float: left;
@@ -177,13 +190,13 @@ nav ul li a:hover{
             font: bold 15px Verdana, Arial, Helvetica, sans-serif;
             border-bottom: 0;
             padding: 3px 7px 4px;
-            margin:5 0 -2 5;
+            margin:5px 0px -2px 5px;
             position: relative;
             display: block;
-            top: -1px;
+            top: -1;
             bottom: 0;
             left -1px;
-            z-index: 1000;
+            z-index: 10;
            }
 
 .message_body{
@@ -191,13 +204,14 @@ nav ul li a:hover{
               border-radius: 0 5px 5px 5px;
               font: 14px Arial, Helvetica, sans-serif;
               padding:3px 7px 4px;
-              margin:0 5 5 5;
+              margin:0px 5px 5px 5px;
               min-height: 10px;
               position: relative;
               
               }
 
 .go_telnet {margin:3px 0 -2 4;}
+
 .go_web {
         text-decoration:none;
         color:#191919;

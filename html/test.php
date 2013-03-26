@@ -74,7 +74,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $community = 'FiberCore';
     }
-    elseif($ip >= -1062726556 && $ip <= -1062725633)
+    elseif($ip >= -1062726512 && $ip <= -1062725644)
     {
        $community = 'DLINKB';
     }
@@ -82,11 +82,10 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     // Ковертируем число обратно в IP
     $ip = long2ip($ip);
 
-    $snmp_location = format_snmp_string(snmpget($ip, $community, '.1.3.6.1.2.1.1.6.0', 50000));
+    //$snmp_location = format_snmp_string(snmpget($matches[0], 'DLINKB', '.1.3.6.1.2.1.1.6.0', 50000));
 
-    //$test[] = '<h2 class="warning host_name">'.$ip.' --> '.$community.'</h2><div class="warning message_body">'.$val.'</div>';
-    $test[] = '<h2 class="host_name warning">'.$matches[0].' --> '.$snmp_location.'</h2><div class="warning message_body">'.$val.'</div>';
-    //$test[] = $matches[0].' --> '.$snmp_location.'<br>';
+    $test[] = '<h2 class="warning host_name">'.$ip.' --> '.$community.'</h2><div class="warning message_body">'.$val.'</div>';
+    //$test[] = '<h2 class="warning host_name">'.$matches[0].' --> '.$snmp_location.'</h2><div class="warning message_body">'.$val.'</div>';
   }
 
   //return print_r($test);
@@ -112,13 +111,13 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
    font-size: 80%;
  }
 
- .float{
-  z-index:100;
- }
+ .float {
+   z-index:10000;
+}
 
  </style>
 
- <link type="text/css" href="./css/style.css" rel="stylesheet">
+ <link type="text/css" href="http://192.168.24.4/css/style.css" rel="stylesheet">
 
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
@@ -185,7 +184,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
   {
     if ($(window).scrollTop() > 0)
     {
-      $('.float').css({ position: 'fixed' , width: '100%' , top: '0' , left: 'auto' });
+      $('.float').css({ position: 'fixed', top: '0', left: 'auto' });
     }
     else
     {
@@ -246,9 +245,9 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
     $.each(data.data, function(key, value)
     {
-      //var keywords = '192.168.20.116 WARN INFO';
-      //keywords = keywords.split(" ");
-      //value = value.replace(new RegExp('('+keywords.join('|')+')',"ig"),"<b>$1</b>");
+      var keywords = '192.168.20.116 WARN INFO';
+      keywords = keywords.split(" ");
+      value = value.replace(new RegExp('('+keywords.join('|')+')',"ig"),"<b>$1</b>");
 
       $("#results").append(value);
     });
@@ -265,20 +264,19 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
 <body>
   <div class="float">
+
 <header>
 <h1><a href="/">Острый глаз</a></h1>
-<h2>Файл: <?php echo $log; ?></h2>
 
-  <div style="right:0; position:absolute; top:10px; width:200px;">
-    <span id="grepspan">Grep keyword: ""</span>
-    <span id="invertspan">Inverted: false</span>
-    <button id="grepKeyword">Опции...</button>
-  </div>
-
+<h2>Параметры</h2>
 </header>
 <nav>
   <ul>
-    <li><a href="index.php">Меню<a/></li>
+    <li><a href="index.php">Параметры<a/></li>
+    <li>Файл: <?php echo $log; ?></span></li>
+    <li><span id="grepspan">Grep keyword: ""</span></li>
+    <li><span id="invertspan">Inverted: false</span></li>
+    <li><button id="grepKeyword">Опции...</button></li>
   </ul>
 </nav>
 </div>
