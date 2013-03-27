@@ -85,7 +85,9 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $snmp_location = format_snmp_string(snmpget($ip, $community, '.1.3.6.1.2.1.1.6.0', 50000));
 
     //$test[] = '<h2 class="warning host_name">'.$ip.' --> '.$community.'</h2><div class="warning message_body">'.$val.'</div>';
-    $test[] = '<h2 class="host_name warning">'.$matches[0].' --> '.$snmp_location.'</h2><div class="warning message_body">'.$val.'</div>';
+    $test[] = '<h2 class="host_name warning">'.$matches[0].' &#8658; '.$snmp_location.' &#9794;</h2>
+               <a href="telnet://'.$ip.'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
+               <div class="warning message_body">'.$val.'</div>';
     //$test[] = $matches[0].' --> '.$snmp_location.'<br>';
   }
 
@@ -112,9 +114,22 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
    font-size: 80%;
  }
 
+ #results {margin:50px 0 0 0;}
+
  .float{
   z-index:100;
+  position: fixed;
+  width: 100%;
+  top: -200px;
+  left: auto;
  }
+
+.float:hover{
+   -webkit-transform: translateY(200px);
+   -moz-webkit-transform: translateY(200px);
+   -o-transform: translateY(200px);
+   transform: translateY(200px);
+}
 
  </style>
 
@@ -185,11 +200,11 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
   {
     if ($(window).scrollTop() > 0)
     {
-      $('.float').css({ position: 'fixed' , width: '100%' , top: '0' , left: 'auto' });
+      $('.float').css({ position: 'fixed' , width: '100%' , top: '-200px' , left: 'auto' });
     }
     else
     {
-      $('.float').css({ position: 'static' });
+      $('.float').css({ position: 'fixed' , top: '-100px' });
     }
   });
 
