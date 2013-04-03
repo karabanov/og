@@ -85,7 +85,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $snmp_location = format_snmp_string(snmpget($ip, $community, '.1.3.6.1.2.1.1.6.0', 50000));
 
     //$test[] = '<h2 class="warning host_name">'.$ip.' --> '.$community.'</h2><div class="warning message_body">'.$val.'</div>';
-    $test[] = '<h2 class="host_name warning">'.$matches[0].' &#8658; '.$snmp_location.' &#9794;</h2>
+    $test[] = '<h2 class="host_name warning">'.$matches[0].' &#8658; '.$snmp_location.'</h2>
                <a href="telnet://'.$ip.'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
                <div class="warning message_body">'.$val.'</div>';
     //$test[] = $matches[0].' --> '.$snmp_location.'<br>';
@@ -122,15 +122,21 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
   width: 100%;
   top: -200px;
   left: auto;
+
+  -webkit-transition: all 1s ease-in-out;
+  -moz-transition: all 1s ease-in-out;
+  -o-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
+
  }
 
 .float:hover{
    -webkit-transform: translateY(200px);
-   -moz-webkit-transform: translateY(200px);
+   -moz-transform: translateY(200px);
    -o-transform: translateY(200px);
    transform: translateY(200px);
-}
 
+}
  </style>
 
  <link type="text/css" href="./css/style.css" rel="stylesheet">
