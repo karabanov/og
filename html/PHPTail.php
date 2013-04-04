@@ -110,15 +110,17 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
       $snmp_location = '[РАЙОННИК]&nbsp;'.$snmp_location;
     }
 
-    $line = preg_replace('/.*(Port).*(\d{1,2}).*(link down)/', "Упал порт <strong>$2</strong>", $line);
+    $line = preg_replace('/.*(Port)\s(\d{1,2})\s(link down)/', "Упал порт <strong>$2</strong>", $line);
 
-    $line = preg_replace('/.*(Port).*(\d{1,2}).*(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/', "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6", $line);
+    $line = preg_replace('/.*(Port)\s(\d{1,2})\s(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/', "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6", $line);
 
     $line = preg_replace('/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> успешно зашёл через <strong>$1</strong>", $line);
 
     $line = preg_replace('/.*Login\sfailed\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> пытается войти через <strong>$1</strong>", $line);
 
     $line = preg_replace('/.*Logout\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>", $line);
+
+    $line = preg_replace('/.*Configuration\ssaved\s.*Username:(.*),\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Конфигурация сохранена пользователем <strong>$1</strong> с IP: <strong>$2</strong>", $line);
 
     $line = preg_replace('/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2}).*\s(.*)\s(\d{1,2})\s(\d{4})/', "Время скорректировано, теперь на часах <strong>$1</strong>", $line);
 
