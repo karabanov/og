@@ -1,5 +1,11 @@
 <?php
 
+  //$line = 'Apr 4 21:17:18 192.168.23.188 INFO: Port 16 link up, 100Mbps FULL duplex';
+
+  //echo preg_replace('/(.*)\s(Port)\s(\d{1,2})\s(link up)\,\s(\d{1,4}Mbps)\s(FULL|HALF)\s(duplex)/', "Порт <strong>$3</strong> поднялся, линк <strong>$5 $6</strong> $7", $line);
+
+  //exit();
+
 include('/var/www/snmp.php');
 
 // Эта функция отвечает за получение последней строки из файла журнала
@@ -45,10 +51,11 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
   }
 
   // Иициируем массив с IP адресами и соответствующими им именами
-  $ip[] = '192.168.20.116'; $name[] = 'Карабанов';
-  $ip[] = '192.168.20.118'; $name[] = 'Ромашка';
-  $ip[] = '192.168.20.112'; $name[] = 'Лена';
-  $data = str_replace($ip, $name, $data);
+  //$ip[] = '192.168.20.116'; $name[] = 'Оператор ТП';
+  //$ip[] = '192.168.20.118'; $name[] = 'Ромашка';
+  //$ip[] = '192.168.20.114'; $name[] = 'Григорчук А. С.';
+  //$ip[] = '192.168.20.112'; $name[] = 'Лена';
+  //$data = str_replace($ip, $name, $data);
 
 
   // Если последний элемент массива представляет собой пустую строку удаляем его
@@ -56,39 +63,68 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
   $test = array();
 
-  foreach($data as $val)
+  foreach($data as $line)
   {
-    preg_match('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $val, $matches);
+    // Вычисляем IP
+    preg_match('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $line, $ip);
 
-    $ip = '';
-    $community = '';
+    // Вычисляем community
+    $community = get_community($ip[0]);
 
-    $ip = ip2long($matches[0]);
+    // Вычисляем порт
+    //if(preg_match('/Port\s(\d{1,2})/', $line, $ports))
+    // {
+    //  $line .= $ports[1];
+    //}
 
-    // Вычисляем комьюнити
-    if($ip == -1062726654 || $ip == -1062726651)
+    $snmp_location = format_snmp_string(snmpget($ip[0], $community, '.1.3.6.1.2.1.1.6.0', 50000));
+
+
+    if(strstr($line, ' loop'))
     {
-       $community = 'CoreBILDER';
+      $class = 'loop';
     }
-    elseif($ip >= -1062726653 && $ip <= -1062726620)
+    elseif(strstr($line, ' down'))
     {
-      $community = 'FiberCore';
+      $class = 'down';
     }
-    elseif($ip >= -1062726556 && $ip <= -1062725633)
+    elseif(strstr($line, ' %SYS-6-CLOCKUPDATE:'))
     {
-       $community = 'DLINKB';
+      $class = 'notice';
+    }
+    elseif(strstr($line, ' up'))
+    {
+      $class = 'up';
+    }
+    elseif(strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' Successful'))
+    {
+      $class = 'login_failed';
+    }
+    else
+    {
+      $class = 'notice';
     }
 
-    // Ковертируем число обратно в IP
-    $ip = long2ip($ip);
+    if($community == 'FiberCore')
+    {
+      $snmp_location = '[РАЙОННИК]&nbsp;'.$snmp_location;
+    }
 
-    $snmp_location = format_snmp_string(snmpget($ip, $community, '.1.3.6.1.2.1.1.6.0', 50000));
+    $line = preg_replace('/.*(Port).*(\d{1,2}).*(link down)/', "Упал порт <strong>$2</strong>", $line);
 
-    //$test[] = '<h2 class="warning host_name">'.$ip.' --> '.$community.'</h2><div class="warning message_body">'.$val.'</div>';
-    $test[] = '<h2 class="host_name warning">'.$matches[0].' &#8658; '.$snmp_location.'</h2>
-               <a href="telnet://'.$ip.'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
-               <div class="warning message_body">'.$val.'</div>';
-    //$test[] = $matches[0].' --> '.$snmp_location.'<br>';
+    $line = preg_replace('/.*(Port).*(\d{1,2}).*(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/', "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6", $line);
+
+    $line = preg_replace('/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> успешно зашёл через <strong>$1</strong>", $line);
+
+    $line = preg_replace('/.*Login\sfailed\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> пытается войти через <strong>$1</strong>", $line);
+
+    $line = preg_replace('/.*Logout\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>", $line);
+
+    $line = preg_replace('/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2}).*\s(.*)\s(\d{1,2})\s(\d{4})/', "Время скорректировано, теперь на часах <strong>$1</strong>", $line);
+
+    $test[] = '<h2 class="host_name '.$class.'">'.$snmp_location.'&nbsp;&#8658;&nbsp;'.$ip[0].'</h2>
+               <a href="telnet://'.$ip[0].'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
+               <div class="message_body '.$class.'">'.$line.'</div>';
   }
 
   //return print_r($test);
@@ -272,6 +308,13 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
       //value = value.replace(new RegExp('('+keywords.join('|')+')',"ig"),"<b>$1</b>");
 
       $("#results").append(value);
+      if($('h2').length > 100) {
+                         $("#results h2:first").remove();
+                         $("#results a:first").remove();
+                         $("#results div:first").remove();
+                        }
+
+
     });
 
  scrollToBottom();
@@ -291,6 +334,8 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 <h2>Файл: <?php echo $log; ?></h2>
 
   <div style="right:0; position:absolute; top:10px; width:200px;">
+    <span id="invertspan">Петель обнаружено: 0</span>
+    <span id="invertspan">Неправильное время: 0</span>
     <span id="grepspan">Grep keyword: ""</span>
     <span id="invertspan">Inverted: false</span>
     <button id="grepKeyword">Опции...</button>
@@ -299,7 +344,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 </header>
 <nav>
   <ul>
-    <li><a href="index.php">Меню<a/></li>
+    <li><a href="index.php">Меню</a></li>
   </ul>
 </nav>
 </div>
@@ -314,7 +359,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     </div>
   </div>
 
- <div id="results"></div>
+ <article id="results"></article>
  </body>
  </html>
 
