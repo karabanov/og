@@ -168,13 +168,13 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 <head>
 <title><?php echo basename($log); ?></title>
 
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
 
-<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/flick/jquery-ui.css" rel="stylesheet">
+<link type="text/css" href="./css/jquery-ui.css" rel="stylesheet">
 <link type="text/css" href="./css/style.css" rel="stylesheet">
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
+<script type="text/javascript" src="./js/jquery.min.js"></script>
+<script type="text/javascript" src="./js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="./js/script.js"></script>
 
 <script type="text/javascript">
