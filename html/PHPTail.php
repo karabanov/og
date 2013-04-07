@@ -1,8 +1,8 @@
 <?php
 
-  //$line = 'Apr 4 21:17:18 192.168.23.188 INFO: Port 16 link up, 100Mbps FULL duplex';
+  //$line = 'Apr 7 12:38:51 192.168.20.18 *Apr 7 12:38:47: %SYS-6-CLOCKUPDATE: System clock has been updated to 12:38:47 GMT Sun Apr 7 2013.';
 
-  //echo preg_replace('/(.*)\s(Port)\s(\d{1,2})\s(link up)\,\s(\d{1,4}Mbps)\s(FULL|HALF)\s(duplex)/', "Порт <strong>$3</strong> поднялся, линк <strong>$5 $6</strong> $7", $line);
+  //echo  preg_replace('/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2}).*\s(.*)\s(.*)\s(\d{1,2})\s(\d{4}).*/u', "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>", $line);
 
   //exit();
 
@@ -96,7 +96,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $class = 'up';
     }
-    elseif(strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' Successful'))
+    elseif(strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save'))
     {
       $class = 'login_failed';
     }
@@ -114,15 +114,23 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
     $line = preg_replace('/.*(Port)\s(\d{1,2})\s(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/', "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6", $line);
 
-    $line = preg_replace('/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> успешно зашёл через <strong>$1</strong>", $line);
+    $line = preg_replace('/.*Port\s(\d{1,2}).*loop.*/', "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена петля! Порт <strong>$1</strong> заблокирован", $line);
 
-    $line = preg_replace('/.*Login\sfailed\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> пытается войти через <strong>$1</strong>", $line);
+    $line = preg_replace('/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>", $line);
 
-    $line = preg_replace('/.*Logout\sthrough\s(Telnet|Web).*Username:(.*)\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>", $line);
+    $line = preg_replace('/.*(Telnet).*failed\sfrom\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/', "<span style='color:#b51515; font-weight: bold;'>Кто-то</span> с IP: <strong>$2</strong> <span style='color:#b51515; font-weight: bold;'>пытается войти</span> через <strong>$1</strong>", $line);
 
-    $line = preg_replace('/.*Configuration\ssaved\s.*Username:(.*),\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', "Конфигурация сохранена пользователем <strong>$1</strong> с IP: <strong>$2</strong>", $line);
+    $line = preg_replace('/.*(Telnet).*User\s(.*).*login.*\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>", $line);
 
-    $line = preg_replace('/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2}).*\s(.*)\s(\d{1,2})\s(\d{4})/', "Время скорректировано, теперь на часах <strong>$1</strong>", $line);
+    $line = preg_replace('/.*Login\sfailed\sthrough\s(Telnet|Web)\s.*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#b51515; font-weight: bold;'>пытается войти</span> через <strong>$1</strong>", $line);
+
+    $line = preg_replace('/.*(Telnet).*User\s(.*).*logout.*\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>", $line);
+
+    $line = preg_replace('/.*Logout\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/', "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>", $line);
+
+    $line = preg_replace('/.*saved.*Username:\s(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/', "Конфигурация сохранена пользователем <strong>$1</strong> с IP: <strong>$2</strong>", $line);
+
+    $line = preg_replace('/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s\s(\d{1,2})\s(\d{4}).*/', "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>", $line);
 
     $test[] = '<h2 class="host_name '.$class.'">'.$snmp_location.'&nbsp;&#8658;&nbsp;'.$ip[0].'</h2>
                <a href="telnet://'.$ip[0].'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
@@ -336,11 +344,12 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 <h2>Файл: <?php echo $log; ?></h2>
 
   <div style="right:0; position:absolute; top:10px; width:200px;">
+    <span id="invertspan">10Mbps линки: 0</span><br>
     <span id="invertspan">Петель обнаружено: 0</span>
     <span id="invertspan">Неправильное время: 0</span>
     <span id="grepspan">Grep keyword: ""</span>
     <span id="invertspan">Inverted: false</span>
-    <button id="grepKeyword">Опции...</button>
+    <button id="grepKeyword">Настройки...</button>
   </div>
 
 </header>
@@ -351,7 +360,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 </nav>
 </div>
 
-  <div id="settings" title="PHPTail settings">
+  <div id="settings" title="Острый галз: Настройки">
     <p>Grep keyword (return results that contain this keyword)</p>
     <input id="grep" type="text" value=""/>
     <p>Should the grep keyword be inverted? (Return results that do NOT contain the keyword)</p>

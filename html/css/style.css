@@ -146,6 +146,8 @@ nav ul li a:hover{
 .host_name {
             float: left;
             max-width: 900px;
+            /*min-width: 500px;*/
+            overflow-x: hidden;
             border-radius: 5px 5px 0 0;
             font: bold 15px Verdana, Arial, Helvetica, sans-serif;
             border-bottom: 0;
