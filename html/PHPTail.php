@@ -148,6 +148,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[10] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s\s(\d{1,2})\s(\d{4}).*/';
     $replacements[10] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
 
+    // ВЫполняем замену
     $line = preg_replace($patterns, $replacements, $line);
 
     $test[] = '<h2 class="host_name '.$class.'">'.$snmp_location.'&nbsp;&#8658;&nbsp;'.$ip[0].'</h2>
@@ -162,221 +163,69 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
  // Эта функция будет распечатать необходимый HTML / CSS / JS
  function generateGUI($log) {
  ?>
- <!DOCTYPE html>
- <html>
- <head>
- <title><?php echo basename($log); ?></title>
+<!DOCTYPE html>
+<html>
+<head>
+<title><?php echo basename($log); ?></title>
 
- <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 
- <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/flick/jquery-ui.css" rel="stylesheet">
+<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/flick/jquery-ui.css" rel="stylesheet">
+<link type="text/css" href="./css/style.css" rel="stylesheet">
 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
+<script type="text/javascript" src="./js/script.js"></script>
 
-<style type="text/css">
+<script type="text/javascript">
+  //Last know size of the file
+  lastSize = <?php echo filesize($log); ?>;
+  //Grep keyword
+  grep = "";
+  //Should the Grep be inverted?
+  invert = 0;
+  //Last known document height
+  documentHeight = 0;
+  //Last known scroll position
+  scrollPosition = 0;
+  //Should we scroll to the bottom?
+  scroll = true;
+</script>
 
- #grepKeyword, #settings {
-   font-size: 80%;
- }
-
- #results {margin:50px 0 0 0;}
-
- .float{
-  z-index:100;
-  position: fixed;
-  width: 100%;
-  top: -200px;
-  left: auto;
-
-  -webkit-transition: all 1s ease-in-out;
-  -moz-transition: all 1s ease-in-out;
-  -o-transition: all 1s ease-in-out;
-  transition: all 1s ease-in-out;
-
- }
-
-.float:hover{
-   -webkit-transform: translateY(200px);
-   -moz-transform: translateY(200px);
-   -o-transform: translateY(200px);
-   transform: translateY(200px);
-
-}
- </style>
-
- <link type="text/css" href="./css/style.css" rel="stylesheet">
-
- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
-
-  <script type="text/javascript">
-
-    //Last know size of the file
-    lastSize = <?php echo filesize($log); ?>;
-    //Grep keyword
-    grep = "";
-    //Should the Grep be inverted?
-    invert = 0;
-    //Last known document height
-    documentHeight = 0;
-    //Last known scroll position
-    scrollPosition = 0;
-    //Should we scroll to the bottom?
-    scroll = true;
-
-    $(document).ready(function(){
-
-    // Setup the settings dialog
-    $( "#settings" ).dialog({
-      modal: true,
-      resizable: false,
-      draggable: false,
-      autoOpen: false,
-      width: 590,
-      height: 270,
-      buttons: {
-      Close: function() { $( this ).dialog( "close" ); }},
-      close: function(event, ui) {
-      grep = $("#grep").val();
-      invert = $('#invert input:radio:checked').val();
-      $("#grepspan").html("Grep keyword: \"" + grep + "\"");
-      $("#invertspan").html("Inverted: " + (invert == 1 ? 'true' : 'false'));
-      }});
-
- //Close the settings dialog after a user hits enter in the textarea
- $('#grep').keyup(function(e) {
- if(e.keyCode == 13) {
- $( "#settings" ).dialog('close');
- }
- });
-
- //Focus on the textarea
- $("#grep").focus();
-
- //Settings button into a nice looking button with a theme
- $("#grepKeyword").button();
-
- //Settings button opens the settings dialog
- $("#grepKeyword").click(function(){
- $( "#settings" ).dialog('open');
- $("#grepKeyword").removeClass('ui-state-focus');
- });
-
-
-  //Set up an interval for updating the log. Change updateTime in the PHPTail contstructor to change this
-  setInterval ( "updateLog()",  300);
-
-  //Some window scroll event to keep the menu at the top
-  $(window).scroll(function(e)
-  {
-    if ($(window).scrollTop() > 0)
-    {
-      $('.float').css({ position: 'fixed' , width: '100%' , top: '-200px' , left: 'auto' });
-    }
-    else
-    {
-      $('.float').css({ position: 'fixed' , top: '-100px' });
-    }
-  });
-
-  //If window is resized should we scroll to the bottom?
-  $(window).resize(function()
-  {
-    if(scroll)
-    {
-      scrollToBottom();
-    }
- });
-
-
-  //Handle if the window should be scrolled down or not
-  $(window).scroll(function()
-  {
-    documentHeight = $(document).height();
-    scrollPosition = $(window).height() + $(window).scrollTop();
-    if(documentHeight <= scrollPosition)
-    {
-      scroll = true;
-    }
-    else
-    {
-      scroll = false;
-    }
-  });
-
-  scrollToBottom();
-
-  });
-
-  //This function scrolls to the bottom
-  function scrollToBottom()
-  {
-    $('.ui-widget-overlay').width($(document).width());
-    $('.ui-widget-overlay').height($(document).height());
-
-    $("html, body").scrollTop($(document).height());
-    if($( "#settings" ).dialog("isOpen"))
-    {
-      $('.ui-widget-overlay').width($(document).width());
-      $('.ui-widget-overlay').height($(document).height());
-      $( "#settings" ).dialog("option", "position", "center");
-    }
-  }
-
-  //This function queries the server for updates.
-  function updateLog()
-  {
-    $.getJSON('?ajax=1&lastsize='+lastSize + '&grep='+grep + '&invert='+invert, function(data) {
-
-    lastSize = data.size;
-
-    $.each(data.data, function(key, value)
-    {
-      //var keywords = '192.168.20.116 WARN INFO';
-      //keywords = keywords.split(" ");
-      //value = value.replace(new RegExp('('+keywords.join('|')+')',"ig"),"<b>$1</b>");
-
-      $("#results").append(value);
-      if($('h2').length > 100) {
-                         $("#results h2:first").remove();
-                         $("#results a:first").remove();
-                         $("#results div:first").remove();
-                        }
-
-
-    });
-
- scrollToBottom();
-
- });
-
-}
-
-
- </script>
- </head>
+</head>
 
 <body>
   <div class="float">
-<header>
-<h1><a href="/">Острый глаз</a></h1>
-<h2>Файл: <?php echo $log; ?></h2>
+    <header>
+      <h1><a href="/">Острый глаз</a></h1>
+      <h2>Файл: <?php echo $log; ?></h2>
 
-  <div style="right:0; position:absolute; top:10px; width:200px;">
-    <span id="invertspan">10Mbps линки: 0</span><br>
-    <span id="invertspan">Петель обнаружено: 0</span>
-    <span id="invertspan">Неправильное время: 0</span>
-    <span id="grepspan">Grep keyword: ""</span>
-    <span id="invertspan">Inverted: false</span>
-    <button id="grepKeyword">Настройки...</button>
+      <div style="right:350px; position:absolute; top:10px; width:30opx; ">
+        <span style="display: block; margin:4px; padding:3px; min-width: 250px; background: #f68c8c;">Порт упал</span>
+        <span style="display: block; margin:4px; padding:3px; min-width: 250px; background: #9af185;">Порт поднялся</span>
+        <span style="display: block; margin:4px; padding:3px; min-width: 250px; background: #ca28b0;">Обнаружена петля</span>
+        <span style="display: block; margin:4px; padding:3px; min-width: 250px; background: #f1ce78;">Логины, Логауты, Сохранения</span>
+        <span style="display: block; margin:4px; padding:3px; min-width: 250px; background: #e2d6d6;">Несущественные сообщения</span>
+      </div>
+
+
+      <div style="right:0; position:absolute; top:10px; width:200px;">
+        <span id="invertspan">10Mbps линки: 0</span><br>
+        <span id="invertspan">Петель обнаружено: 0</span>
+        <span id="invertspan">Неправильное время: 0</span>
+        <span id="grepspan">Grep keyword: ""</span>
+        <span id="invertspan">Inverted: false</span>
+        <button id="grepKeyword">Настройки...</button>
+      </div>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="index.php">Меню</a></li>
+        <li><a href="index.php"><span style='color:#b51515; font-weight: bold;'>β</span>-версия (иногда кажет, что порт падает 3 и более раз подряд, пока не понятно, что это за фича)</a></li>
+      </ul>
+    </nav>
   </div>
-
-</header>
-<nav>
-  <ul>
-    <li><a href="index.php">Меню</a></li>
-  </ul>
-</nav>
-</div>
 
   <div id="settings" title="Острый галз: Настройки">
     <p>Grep keyword (return results that contain this keyword)</p>
@@ -388,9 +237,9 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     </div>
   </div>
 
- <article id="results"></article>
- </body>
- </html>
+  <article id="results"></article>
+</body>
+</html>
 
  <?php
  }

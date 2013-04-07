@@ -98,6 +98,7 @@ nav ul li:after {
   padding:0px 6px;
   color:#eee;
   content:'→';
+  float:right;
 }
 
 nav ul li a{
@@ -106,6 +107,12 @@ nav ul li a{
   -webkit-transition: color 1s ease;
   -moz-webkit-transition: color 1s ease;
   -o-transition: color 1s ease;
+  text-decoration: none;
+  padding-bottom: 5px;
+  display:block;
+  border-bottom: 1px solid #eee;
+  float:left;
+
 }
 
 nav ul li a:hover{
@@ -181,6 +188,35 @@ nav ul li a:hover{
    border-radius: 5px;
    padding:3px;
 }
+
+
+ #grepKeyword, #settings {
+   font-size: 80%;
+ }
+
+ #results {margin:50px 0 0 0;}
+
+ .float{
+  z-index:100;
+  position: fixed;
+  width: 100%;
+  top: -200px;
+  left: auto;
+
+  -webkit-transition: all 1s ease-in-out;
+  -moz-transition: all 1s ease-in-out;
+  -o-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
+
+ }
+
+.float:hover{
+   -webkit-transform: translateY(200px);
+   -moz-transform: translateY(200px);
+   -o-transform: translateY(200px);
+   transform: translateY(200px);
+}
+
 
 
 footer {
