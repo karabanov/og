@@ -72,11 +72,10 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $community = get_community($ip[0]);
 
     // Вычисляем порт
-    if(preg_match('/Port\s(\d{1,2})/', $line, $ports))
-    {
-      $snmp_description = format_snmp_string(snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
-    }
-
+    //if(preg_match('/Port\s(\d{1,2})/', $line, $ports))
+    // {
+    //  $line .= $ports[1];
+    //}
 
     $snmp_location = format_snmp_string(snmpget($ip[0], $community, '.1.3.6.1.2.1.1.6.0', 50000));
 
@@ -85,7 +84,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $class = 'loop';
     }
-    elseif(strstr($line, ' down') || strstr($line, ' DOWN'))
+    elseif(strstr($line, ' down'))
     {
       $class = 'down';
     }
@@ -93,7 +92,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $class = 'notice';
     }
-    elseif(strstr($line, ' up') || strstr($line, ' UP'))
+    elseif(strstr($line, ' up'))
     {
       $class = 'up';
     }
@@ -117,13 +116,13 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $replacements = array();
 
     $patterns[] = '/.*(Port)\s(\d{1,2})\s(link down)/';
-    $replacements[] = "Упал порт <strong>$2</strong> это <strong>".$snmp_description.'</strong>';
+    $replacements[] = "Упал порт <strong>$2</strong>";
 
     $patterns[] = '/.*(Port)\s(\d{1,2})\s(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/';
-    $replacements[] = "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6 это <strong>".$snmp_description.'</strong>';
+    $replacements[] = "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6";
 
     $patterns[] = '/.*Port\s(\d{1,2}).*loop.*/';
-    $replacements[] =  "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена петля! Порт <strong>$1</strong> заблокирован! Это <strong>".$snmp_description.'</strong>';
+    $replacements[] =  "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена петля! Порт <strong>$1</strong> заблокирован";
 
     $patterns[] = '/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
     $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>";
@@ -149,9 +148,6 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*Logout\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
     $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>";
 
-    $patterns[] = '/.*(Telnet)\ssession\stimed.*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> был выкинут из <strong>$1</strong>, так как долго бездействовал";
-
     $patterns[] = '/.*Logout\sthrough\s(Telnet|Web).*Username:(.*)\)/';
     $replacements[] = "Пользователь: <strong>$2</strong> вышел из <strong>$1</strong>";
 
@@ -166,6 +162,9 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
     $patterns[] = '/.*cold.*start.*/';
     $replacements[] = "Коммутатор <strong>ЗАПУСТИЛСЯ</strong>";
+
+    $patterns[] = '/.*warm.*start.*/';
+    $replacements[] = "Коммутатор <strong>ПЕРЕЗАПУСТИЛСЯ</strong>";
 
     $patterns[] = '/.*warm.*start.*/';
     $replacements[] = "Коммутатор <strong>ПЕРЕЗАПУСТИЛСЯ</strong>";
