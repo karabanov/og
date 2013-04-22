@@ -96,7 +96,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $class = 'up';
     }
-    elseif(strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save'))
+    elseif(strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save'))
     {
       $class = 'login_failed';
     }
@@ -115,38 +115,56 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     // В этом массиве будут храниться заменялки
     $replacements = array();
 
-    $patterns[0] = '/.*(Port)\s(\d{1,2})\s(link down)/';
-    $replacements[0] = "Упал порт <strong>$2</strong>";
+    $patterns[] = '/.*(Port)\s(\d{1,2})\s(link down)/';
+    $replacements[] = "Упал порт <strong>$2</strong>";
 
-    $patterns[1] = '/.*(Port)\s(\d{1,2})\s(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/';
-    $replacements[1] = "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6";
+    $patterns[] = '/.*(Port)\s(\d{1,2})\s(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/';
+    $replacements[] = "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6";
 
-    $patterns[2] = '/.*Port\s(\d{1,2}).*loop.*/';
-    $replacements[2] =  "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена петля! Порт <strong>$1</strong> заблокирован";
+    $patterns[] = '/.*Port\s(\d{1,2}).*loop.*/';
+    $replacements[] =  "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена петля! Порт <strong>$1</strong> заблокирован";
 
-    $patterns[3] = '/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[3] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>";
+    $patterns[] = '/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
+    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>";
 
-    $patterns[4] = '/.*(Telnet).*failed\sfrom\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[4] = "<span style='color:#b51515; font-weight: bold;'>Кто-то</span> с IP: <strong>$2</strong> <span style='color:#b51515; font-weight: bold;'>пытается войти</span> через <strong>$1</strong>";
+    $patterns[] = '/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*)\)/';
+    $replacements[] = "Пользователь: <strong>$2</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>";
 
-    $patterns[5] = '/.*(Telnet).*User\s(.*).*login.*\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[5] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>";
+    $patterns[] = '/.*(Telnet).*failed\sfrom\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
+    $replacements[] = "<span style='color:#b51515; font-weight: bold;'>Кто-то</span> с IP: <strong>$2</strong> <span style='color:#b51515; font-weight: bold;'>пытается войти</span> через <strong>$1</strong>";
 
-    $patterns[6] = '/.*Login\sfailed\sthrough\s(Telnet|Web)\s.*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[6] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#b51515; font-weight: bold;'>пытается войти</span> через <strong>$1</strong>";
+    $patterns[] = '/.*(Telnet).*User\s(.*).*login.*\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
+    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>";
 
-    $patterns[7] = '/.*(Telnet).*User\s(.*).*logout.*\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[7] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>";
+    $patterns[] = '/.*Login\sfailed\sthrough\s(Telnet|Web)\s.*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
+    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#b51515; font-weight: bold;'>пытается войти</span> через <strong>$1</strong>";
 
-    $patterns[8] = '/.*Logout\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[8] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>";
+    $patterns[] = '/.*Login\sfailed\sthrough\s(Telnet|Web)\s.*Username:(.*)\)/';
+    $replacements[] = "Пользователь: <strong>$2</strong> <span style='color:#b51515; font-weight: bold;'>пытается войти</span> через <strong>$1</strong>";
 
-    $patterns[9] = '/.*saved.*Username:\s(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[9] = "Конфигурация сохранена пользователем <strong>$1</strong> с IP: <strong>$2</strong>";
+    $patterns[] = '/.*(Telnet).*User\s(.*).*logout.*\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
+    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>";
 
-    $patterns[10] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s\s(\d{1,2})\s(\d{4}).*/';
-    $replacements[10] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
+    $patterns[] = '/.*Logout\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
+    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>";
+
+    $patterns[] = '/.*Logout\sthrough\s(Telnet|Web).*Username:(.*)\)/';
+    $replacements[] = "Пользователь: <strong>$2</strong> вышел из <strong>$1</strong>";
+
+    $patterns[] = '/.*saved.*Username:\s(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
+    $replacements[] = "Конфигурация сохранена пользователем <strong>$1</strong> с IP: <strong>$2</strong>";
+
+    $patterns[] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s\s(\d{1,2})\s(\d{4}).*/';
+    $replacements[] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
+
+    $patterns[] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s(\d{1,2})\s(\d{4}).*/';
+    $replacements[] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
+
+    $patterns[] = '/.*cold.*start.*/';
+    $replacements[] = "Коммутатор <strong>ЗАПУСТИЛСЯ</strong>";
+
+    $patterns[] = '/.*warm.*start.*/';
+    $replacements[] = "Коммутатор <strong>ПЕРЕЗАПУСТИЛСЯ</strong>";
 
     // ВЫполняем замену
     $line = preg_replace($patterns, $replacements, $line);
