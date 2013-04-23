@@ -71,7 +71,8 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     // Вычисляем community
     $community = get_community($ip[0]);
 
-    // Вычисляем порт
+    // Вычисляем порт и выясняем его описане
+    $snmp_description = '***НЕИЗВЕСТНО***';
     if(preg_match('/Port\s(\d{1,2})/', $line, $ports))
     {
       $snmp_description = format_snmp_string(snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
@@ -123,7 +124,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $replacements[] = "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6 это <strong>".$snmp_description.'</strong>';
 
     $patterns[] = '/.*Port\s(\d{1,2}).*loop.*/';
-    $replacements[] =  "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена петля! Порт <strong>$1</strong> заблокирован! Это <strong>".$snmp_description.'</strong>';
+    $replacements[] =  "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена <strong>петля</strong>! Порт <strong>$1</strong> заблокирован! Это <strong>".$snmp_description.'</strong>';
 
     $patterns[] = '/.*Successful\slogin\sthrough\s(Telnet|Web).*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
     $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> <span style='color:#107d10; font-weight: bold;'>успешно зашёл</span> через <strong>$1</strong>";
@@ -150,19 +151,19 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> вышел из <strong>$1</strong>";
 
     $patterns[] = '/.*(Telnet)\ssession\stimed.*Username:(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> был выкинут из <strong>$1</strong>, так как долго бездействовал";
+    $replacements[] = "Пользователь: <strong>$2</strong> с IP: <strong>$3</strong> был выкинут из <strong>$1</strong>, так как <strong>долго бездействовал</strong>";
 
     $patterns[] = '/.*Logout\sthrough\s(Telnet|Web).*Username:(.*)\)/';
     $replacements[] = "Пользователь: <strong>$2</strong> вышел из <strong>$1</strong>";
 
     $patterns[] = '/.*saved.*Username:\s(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[] = "Конфигурация сохранена пользователем <strong>$1</strong> с IP: <strong>$2</strong>";
+    $replacements[] = "<strong>Конфигурация сохранена</strong> пользователем <strong>$1</strong> с IP: <strong>$2</strong>";
 
     $patterns[] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s\s(\d{1,2})\s(\d{4}).*/';
-    $replacements[] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
+    $replacements[] = "<strong>Время скорректировано</strong>, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
 
     $patterns[] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s(\d{1,2})\s(\d{4}).*/';
-    $replacements[] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
+    $replacements[] = "<strong>Время скорректировано</strong>, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
 
     $patterns[] = '/.*cold.*start.*/';
     $replacements[] = "Коммутатор <strong>ЗАПУСТИЛСЯ</strong>";
@@ -170,9 +171,8 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*warm.*start.*/';
     $replacements[] = "Коммутатор <strong>ПЕРЕЗАПУСТИЛСЯ</strong>";
 
- //Apr 22 11:52:29 192.168.23.84 INFO: Telnet session timed out (Username: root, IP: 192.168.20.116)
 
-    // ВЫполняем замену
+    // Выполняем замену
     $line = preg_replace($patterns, $replacements, $line);
 
     $test[] = '<h2 class="host_name '.$class.'">'.$snmp_location.'&nbsp;&#8658;&nbsp;'.$ip[0].'</h2>
@@ -186,7 +186,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
  // Эта функция будет распечатать необходимый HTML / CSS / JS
  function generateGUI($log) {
- ?>
+?>
 <!DOCTYPE html>
 <html>
 <head>
