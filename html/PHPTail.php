@@ -157,19 +157,34 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $replacements[] = "Пользователь: <strong>$2</strong> вышел из <strong>$1</strong>";
 
     $patterns[] = '/.*saved.*Username:\s(.*).?\sIP:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*/';
-    $replacements[] = "<strong>Конфигурация сохранена</strong> пользователем <strong>$1</strong> с IP: <strong>$2</strong>";
+    $replacements[] = "Конфигурация сохранена пользователем <strong>$1</strong> с IP: <strong>$2</strong>";
 
     $patterns[] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s\s(\d{1,2})\s(\d{4}).*/';
-    $replacements[] = "<strong>Время скорректировано</strong>, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
+    $replacements[] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
 
     $patterns[] = '/.*\s(\d{1,2}\:\d{1,2}\:\d{1,2})\s.*\s(.*)\s(.*)\s(\d{1,2})\s(\d{4}).*/';
-    $replacements[] = "<strong>Время скорректировано</strong>, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
+    $replacements[] = "Время скорректировано, теперь на часах <strong>$1</strong> на календаре <strong>$2 $4 $3 $5 г.</strong>";
 
     $patterns[] = '/.*cold.*start.*/';
     $replacements[] = "Коммутатор <strong>ЗАПУСТИЛСЯ</strong>";
 
     $patterns[] = '/.*warm.*start.*/';
     $replacements[] = "Коммутатор <strong>ПЕРЕЗАПУСТИЛСЯ</strong>";
+
+// Apr 26 12:11:58 192.168.20.24 *Apr 26 12:11:54: %LINK-3-UPDOWN: Interface GigabitEthernet 0/22, changed state to up.
+
+//Apr 26 12:11:58 192.168.20.24 *Apr 26 12:11:54: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet 0/22, changed state to up.
+
+//Apr 26 12:11:43 192.168.20.22 *Apr 26 12:11:36: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
+
+//Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
+
+
+//Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-ROOTCHANGE: Root Changed for instance 0: New Root Port is GigabitEthernet 0/24. New Root Mac Address is f07d.68f0.6cbc.
+
+//Apr 26 12:36:47 192.168.20.18 *Apr 26 12:36:42: %LINK-3-UPDOWN: Interface GigabitEthernet 0/18, changed state to up.
+
+//Apr 26 12:36:47 192.168.20.18 *Apr 26 12:36:42: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet 0/18, changed state to up.
 
 
     // Выполняем замену
