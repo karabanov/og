@@ -185,6 +185,12 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*Port\s(\d{1,2})\s.*recovered.*/';
     $replacements[] = "Разблокирован порт <strong>$1</strong> после петли";
 
+    $patterns[] = '/.*MODULE_CONFIG_SHELL.*successfully/';
+    $replacements[] = "Конфигурация сохранена";
+
+    //$patterns[] = '/.*INVALIDSOURCEADDRESSPACKET.*([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}).*port\s(.*)\sin\svlan\s(\d{1,5}).*/';
+    //$replacements[] = "Получен корректный пакет. Неправильный MAC <strong>$1</strong>";
+
 // Apr 26 12:11:58 192.168.20.24 *Apr 26 12:11:54: %LINK-3-UPDOWN: Interface GigabitEthernet 0/22, changed state to up.
 
 //Apr 26 12:11:58 192.168.20.24 *Apr 26 12:11:54: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet 0/22, changed state to up.
@@ -206,9 +212,8 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 //Apr 30 08:30:22 192.168.20.2 42196: .Apr 30 04:30:21.486: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
 
 
-// May 10 09:50:41 192.168.20.2 50096: May 10 05:50:40.561: %C4K_L2MAN-6-INVALIDSOURCEADDRESSPACKET: (Suppressed 325 times)Packet received with invalid source MAC address (00:00:00:00:00:00) on port Po1 in vlan 698
-
 // May 10 09:54:15 192.168.20.2 50099: May 10 05:54:12.254: %SYS-5-CONFIG_I: Configured from console by vty0 (78.81.224.20)
+
 
     // Выполняем замену
     $line = preg_replace($patterns, $replacements, $line);
