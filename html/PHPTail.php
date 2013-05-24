@@ -75,13 +75,14 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
     // Вычисляем порт и выясняем его описане
     $snmp_description = '***НЕИЗВЕСТНО***';
-    if(preg_match('/Port\s(\d{1,2})/', $line, $ports))
+
+    if(preg_match('/Port\s(\d{1,2})/', $line, $ports) || preg_match('/GigabitEthernet\s.*\/(\d{1,2})/', $line, $ports))
     {
-      $snmp_description = format_snmp_string(snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
+      $snmp_description = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
+      if(empty($snmp_description)) $snmp_description = '***НЕИЗВЕСТНО***';
     }
 
-
-    $snmp_location = format_snmp_string(snmpget($ip[0], $community, '.1.3.6.1.2.1.1.6.0', 50000));
+    $snmp_location = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.1.6.0', 50000));
 
 
     if(strstr($line, ' loop'))
@@ -188,32 +189,40 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*MODULE_CONFIG_SHELL.*successfully/';
     $replacements[] = "Конфигурация сохранена";
 
+    $patterns[] = '/.*LINK-3-UPDOWN.*GigabitEthernet\s(.*)\,.*up/';
+    $replacements[] = "Пднялся физлинк в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*GigabitEthernet\s(.*)\,.*up/';
+    $replacements[] = "Пднялся Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*%LINK-3-UPDOWN.*GigabitEthernet\s(.*)\,.*down/';
+    $replacements[] = "Упал физлинк в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*GigabitEthernet\s(.*)\,.*down/';
+    $replacements[] = "Упал Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
+
+
     //$patterns[] = '/.*INVALIDSOURCEADDRESSPACKET.*([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}).*port\s(.*)\sin\svlan\s(\d{1,5}).*/';
     //$replacements[] = "Получен корректный пакет. Неправильный MAC <strong>$1</strong>";
-
-// Apr 26 12:11:58 192.168.20.24 *Apr 26 12:11:54: %LINK-3-UPDOWN: Interface GigabitEthernet 0/22, changed state to up.
-
-//Apr 26 12:11:58 192.168.20.24 *Apr 26 12:11:54: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet 0/22, changed state to up.
 
 //Apr 26 12:11:43 192.168.20.22 *Apr 26 12:11:36: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
 
 //Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
 
-
 //Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-ROOTCHANGE: Root Changed for instance 0: New Root Port is GigabitEthernet 0/24. New Root Mac Address is f07d.68f0.6cbc.
-
-//Apr 26 12:36:47 192.168.20.18 *Apr 26 12:36:42: %LINK-3-UPDOWN: Interface GigabitEthernet 0/18, changed state to up.
-
-//Apr 26 12:36:47 192.168.20.18 *Apr 26 12:36:42: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet 0/18, changed state to up.
-
 
 //Apr 30 08:28:17 192.168.20.2 42195: .Apr 30 04:28:16.475: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
 
 //Apr 30 08:30:22 192.168.20.2 42196: .Apr 30 04:30:21.486: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
 
-
 // May 10 09:54:15 192.168.20.2 50099: May 10 05:54:12.254: %SYS-5-CONFIG_I: Configured from console by vty0 (78.81.224.20)
 
+$param = array();
+  $param['ip'] = '192.168.21.34';
+  $param['community_ro'] = 'DLINKB';
+  $param['community_rw'] = 'BDLINK';
+  $param['port'] = '7';
 
     // Выполняем замену
     $line = preg_replace($patterns, $replacements, $line);
