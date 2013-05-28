@@ -101,7 +101,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $class = 'up';
     }
-    elseif(strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save'))
+    elseif(strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save') || strstr($line, '%SYS-5-CONFIG_I'))
     {
       $class = 'login_failed';
     }
@@ -201,24 +201,27 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*GigabitEthernet\s(.*)\,.*down/';
     $replacements[] = "Упал Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
+    $patterns[] = '/.*\s(vty\d?)\s?\((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\)/';
+    $replacements[] = "Конфигурация сохранена пользователем с IP <strong>$2</strong> c консоли <strong>$1</strong>";
+
 
 
     //$patterns[] = '/.*INVALIDSOURCEADDRESSPACKET.*([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}).*port\s(.*)\sin\svlan\s(\d{1,5}).*/';
     //$replacements[] = "Получен корректный пакет. Неправильный MAC <strong>$1</strong>";
 
-//Apr 26 12:11:43 192.168.20.22 *Apr 26 12:11:36: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
+// Apr 26 12:11:43 192.168.20.22 *Apr 26 12:11:36: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
 
-//Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
+// Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
 
-//Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-ROOTCHANGE: Root Changed for instance 0: New Root Port is GigabitEthernet 0/24. New Root Mac Address is f07d.68f0.6cbc.
+// Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-ROOTCHANGE: Root Changed for instance 0: New Root Port is GigabitEthernet 0/24. New Root Mac Address is f07d.68f0.6cbc.
 
-//Apr 30 08:28:17 192.168.20.2 42195: .Apr 30 04:28:16.475: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
+// Apr 30 08:28:17 192.168.20.2 42195: .Apr 30 04:28:16.475: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
 
-//Apr 30 08:30:22 192.168.20.2 42196: .Apr 30 04:30:21.486: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
+// Apr 30 08:30:22 192.168.20.2 42196: .Apr 30 04:30:21.486: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
 
-// May 10 09:54:15 192.168.20.2 50099: May 10 05:54:12.254: %SYS-5-CONFIG_I: Configured from console by vty0 (78.81.224.20)
+// May 28 14:47:22 192.168.20.22 *May 28 14:47:17: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-5-28 14:47:17)
 
-$param = array();
+  $param = array();
   $param['ip'] = '192.168.21.34';
   $param['community_ro'] = 'DLINKB';
   $param['community_rw'] = 'BDLINK';
