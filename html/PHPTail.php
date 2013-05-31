@@ -8,6 +8,17 @@
 
 include('/var/www/snmp.php');
 
+function translite($string) {
+
+$rus = array('щ',        'ш', 'ё', 'ю', 'я', 'ж', 'ц', 'й', 'ч', 'а','б','в','г','д','е','з','и','к','л','м','н','о','п','р','с','т','у','ф','х',
+             'Щ',   'Ш', 'Ш', 'Ё', 'Ю', 'Я', 'Ж', 'Ц', 'Й', 'Ч', 'А','Б','В','Г','Д','Е','З','И','Л','Л','М','Н','О','П','Р','С','Т','У','Ф','Х');
+$eng = array('shch',     'sh','yo','yu','ya','zh','ce','iy','ch','a','b','v','g','d','e','z','i','k','l','m','n','o','p','r','s','t','u','f','h',
+             'SHCH','Sh','SH','YO','YU','YO','ZH','CE','IY','CH','A','B','V','G','D','E','Z','I','K','L','M','N','O','P','R','S','T','U','F','H');
+
+        $string = str_replace($eng, $rus,  $string);
+        return $string;
+    }
+
 // Эта функция отвечает за получение последней строки из файла журнала
 function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 {
@@ -101,7 +112,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $class = 'up';
     }
-    elseif(strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save') || strstr($line, '%SYS-5-CONFIG_I'))
+    elseif(strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save') || strstr($line, '%SYS-5-CONFIG_I') || strstr($line, 'SPANTREE') || strstr($line, 'INVALIDSOURCEADDRESSPACKET'))
     {
       $class = 'login_failed';
     }
@@ -204,22 +215,21 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*\s(vty\d?)\s?\((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\)/';
     $replacements[] = "Конфигурация сохранена пользователем с IP <strong>$2</strong> c консоли <strong>$1</strong>";
 
+    $patterns[] = '/.*SPANTREE-5-ROOTCHANGE.*instance\s(\d).*GigabitEthernet\s(.*)\.\s.*\s(.*)\./';
+    $replacements[] = "Корневой порт изменён. Новый корнеавой порт <strong>$2</strong>. Новый корневой MAC <strong>$3</strong>";
 
+    $patterns[] = '/.*SPANTREE-5-TOPOTRAP.*Topology\sChange.*instance\s(\d).*/';
+    $replacements[] = "Топология изменена";
 
-    //$patterns[] = '/.*INVALIDSOURCEADDRESSPACKET.*([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}).*port\s(.*)\sin\svlan\s(\d{1,5}).*/';
-    //$replacements[] = "Получен корректный пакет. Неправильный MAC <strong>$1</strong>";
+    $patterns[] = '/.*INVALIDSOURCEADDRESSPACKET.*([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}).*port\s(.*)\sin\svlan\s(\d{1,5})/';
+    $replacements[] = "Получен некорректный пакет. Неправильный MAC <strong>$1</strong> из порта <strong>$2</strong> VLAN <strong>$3</strong>";
 
-// Apr 26 12:11:43 192.168.20.22 *Apr 26 12:11:36: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
-
-// Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-TOPOTRAP: Topology Change Trap for instance 0.
-
-// Apr 26 12:11:38 192.168.20.24 *Apr 26 12:11:34: %SPANTREE-5-ROOTCHANGE: Root Changed for instance 0: New Root Port is GigabitEthernet 0/24. New Root Mac Address is f07d.68f0.6cbc.
-
-// Apr 30 08:28:17 192.168.20.2 42195: .Apr 30 04:28:16.475: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
-
-// Apr 30 08:30:22 192.168.20.2 42196: .Apr 30 04:30:21.486: %IGMP-3-QUERY_INT_MISMATCH: VRF iptv: Received a non-matching query interval 125, from querier address 192.168.2.1
 
 // May 28 14:47:22 192.168.20.22 *May 28 14:47:17: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-5-28 14:47:17)
+
+// May 31 08:24:23 192.168.20.22 *May 31 08:24:18: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-5-31 8:24:18)
+
+// May 31 10:27:36 192.168.21.58 INFO: Telnet session timed out (Username: root)
 
   $param = array();
   $param['ip'] = '192.168.21.34';
