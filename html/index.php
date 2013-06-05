@@ -226,6 +226,11 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
 
 // May 31 08:24:23 192.168.20.22 *May 31 08:24:18: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-5-31 8:24:18)
 
+// Jun 4 16:00:47 192.168.20.2 67798: Jun 4 12:00:46.108: %LINK-3-UPDOWN: Interface Vlan652, changed state to up
+
+// Jun 4 21:25:56 192.168.20.22 *Jun 4 21:25:51: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-6-4 21:25:51)
+
+// Jun 5 09:11:45 192.168.20.31 *Jun 5 09:11:40: %LINK-5-CHANGED: Interface GigabitEthernet 0/22, changed state to administratively down.
 
   $param = array();
   $param['ip'] = '192.168.21.34';
