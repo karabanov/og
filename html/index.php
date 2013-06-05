@@ -106,7 +106,7 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     {
       $class = 'up';
     }
-    elseif(strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save') || strstr($line, '%SYS-5-CONFIG_I') || strstr($line, 'SPANTREE') || strstr($line, 'INVALIDSOURCEADDRESSPACKET'))
+    elseif(strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save') || strstr($line, '%SYS-5-CONFIG_I') || strstr($line, 'SPANTREE') || strstr($line, 'INVALIDSOURCEADDRESSPACKET') || strstr($line, 'DOS_DETECTED'))
     {
       $class = 'login_failed';
     }
@@ -200,14 +200,23 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*LINK-3-UPDOWN.*GigabitEthernet\s(.*)\,.*up/';
     $replacements[] = "Пднялся физлинк в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
+    $patterns[] = '/.*LINK-3-UPDOWN.*Interface\s(.*)\,.*up/';
+    $replacements[] = "Пднялся физлинк  на интерфейсе <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
     $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*GigabitEthernet\s(.*)\,.*up/';
     $replacements[] = "Пднялся Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
     $patterns[] = '/.*%LINK-3-UPDOWN.*GigabitEthernet\s(.*)\,.*down/';
     $replacements[] = "Упал физлинк в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
+    $patterns[] = '/.*LINK-3-UPDOWN.*Interface\s(.*)\,.*down/';
+    $replacements[] = "Упал физлинк на интерфейсе <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
     $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*GigabitEthernet\s(.*)\,.*down/';
     $replacements[] = "Упал Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*LINK-5-CHANGED.*GigabitEthernet\s(.*)\,.*administratively\sdown/';
+    $replacements[] = "Администратор выключил порт <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
     $patterns[] = '/.*\s(vty\d?)\s?\((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\)/';
     $replacements[] = "Конфигурация сохранена пользователем с IP <strong>$2</strong> c консоли <strong>$1</strong>";
@@ -221,16 +230,10 @@ function getNewLines($log = '', $lastFetchedSize, $grepKeyword, $invert)
     $patterns[] = '/.*INVALIDSOURCEADDRESSPACKET.*([0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}).*port\s(.*)\sin\svlan\s(\d{1,5})/';
     $replacements[] = "Получен некорректный пакет. Неправильный SOURCE-MAC <strong>$1</strong> из порта <strong>$2</strong> VLAN <strong>$3</strong>";
 
+    $patterns[] = '/.*NFPP_IP_GUARD-4-DOS_DETECTED.*Host\swas\sdetected/';
+    $replacements[] = "Обнаружена <strong>DoS</strong> атака";
 
-// May 28 14:47:22 192.168.20.22 *May 28 14:47:17: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-5-28 14:47:17)
 
-// May 31 08:24:23 192.168.20.22 *May 31 08:24:18: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-5-31 8:24:18)
-
-// Jun 4 16:00:47 192.168.20.2 67798: Jun 4 12:00:46.108: %LINK-3-UPDOWN: Interface Vlan652, changed state to up
-
-// Jun 4 21:25:56 192.168.20.22 *Jun 4 21:25:51: %NFPP_IP_GUARD-4-DOS_DETECTED: Host was detected.(2013-6-4 21:25:51)
-
-// Jun 5 09:11:45 192.168.20.31 *Jun 5 09:11:40: %LINK-5-CHANGED: Interface GigabitEthernet 0/22, changed state to administratively down.
 
   $param = array();
   $param['ip'] = '192.168.21.34';
