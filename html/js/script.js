@@ -104,7 +104,7 @@
   //This function queries the server for updates.
   function updateLog()
   {
-    $.getJSON('http://192.168.24.4/og/html/PHPTail.php?ajax=1&lastsize=' + lastSize + '&grep='+grep + '&invert=' + invert, function(data) {
+    $.getJSON('PHPTail.php?ajax=1&lastsize=' + lastSize + '&grep=' + grep + '&invert=' + invert, function(data) {
 
     lastSize = data.size;
 

@@ -53,28 +53,20 @@
 
   }
 
-  // Запустите GREP функция возвращает только те строки, мы заинтересованы
+  /*// Запустите GREP функция возвращает только те строки, мы заинтересованы
   if($invert == 0)
   {
-    $data = preg_grep("/$grepKeyword/",$data);
+    $data = preg_grep("/$grepKeyword/", $data);
   }
   else
   {
-    $data = preg_grep("/$grepKeyword/",$data, PREG_GREP_INVERT);
-  }
-
-  // Иициируем массив с IP адресами и соответствующими им именами
-  //$ip[] = '192.168.20.116'; $name[] = 'Оператор ТП';
-  //$ip[] = '192.168.20.118'; $name[] = 'Ромашка';
-  //$ip[] = '192.168.20.114'; $name[] = 'Григорчук А. С.';
-  //$ip[] = '192.168.20.112'; $name[] = 'Лена';
-  //$data = str_replace($ip, $name, $data);
-
+    $data = preg_grep("/$grepKeyword/", $data, PREG_GREP_INVERT);
+  }*/
 
   // Если последний элемент массива представляет собой пустую строку удаляем его
   if(end($data) == '') array_pop($data);
 
-  $test = array();
+  $out = array();
 
   foreach($data as $line)
   {
@@ -86,16 +78,16 @@
 
     // Вычисляем порт и выясняем его описане
     $snmp_description = '***НЕИЗВЕСТНО***';
-
     if(preg_match('/Port\s(\d{1,2})/', $line, $ports) || preg_match('/GigabitEthernet\s.*\/(\d{1,2})/', $line, $ports))
     {
       $snmp_description = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
       if(empty($snmp_description)) $snmp_description = '***НЕИЗВЕСТНО***';
     }
 
+    // Выясняем где распологается коммутатор
     $snmp_location = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.1.6.0', 50000));
 
-
+    // Выбираем оформление для записи
     if(strstr($line, ' loop'))
     {
       $class = 'loop';
@@ -240,22 +232,24 @@
     $replacements[] = "Обнаружена <strong>DoS</strong> атака";
 
 
-
-  $param = array();
-  $param['ip'] = '192.168.21.34';
-  $param['community_ro'] = 'DLINKB';
-  $param['community_rw'] = 'BDLINK';
-  $param['port'] = '7';
-
     // Выполняем замену
     $line = preg_replace($patterns, $replacements, $line);
 
-    $test[] = '<h2 class="host_name '.$class.'">'.$snmp_location.'&nbsp;&#8658;&nbsp;'.$ip[0].'</h2>
-               <a href="telnet://'.$ip[0].'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
-               <div class="message_body '.$class.'">'.$line.'</div>';
+    $out[] = '<h2 class="host_name '.$class.'">'.$snmp_location.'&nbsp;&#8658;&nbsp;'.$ip[0].'</h2>
+              <a href="telnet://'.$ip[0].'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
+              <div class="message_body '.$class.'">'.$line.'</div>';
+
+    // Запустите GREP функция возвращает только те строки, мы заинтересованы
+    if($invert == 0)
+    {
+      $out = preg_grep("/$grepKeyword/", $out);
+    }
+    else
+    {
+      $out = preg_grep("/$grepKeyword/", $out, PREG_GREP_INVERT);
+    }
+
   }
 
-
-  //return print_r($test);
-  echo json_encode(array('size' => $fsize, 'data' => $test));
+  echo json_encode(array('size' => $fsize, 'data' => $out));
 ?>
