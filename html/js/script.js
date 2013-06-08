@@ -1,3 +1,15 @@
+  //Last know size of the file
+  lastSize = "";
+  //Grep keyword
+  grep = "";
+  //Should the Grep be inverted?
+  invert = 0;
+  //Last known document height
+  documentHeight = 0;
+  //Last known scroll position
+  scrollPosition = 0;
+  //Should we scroll to the bottom?
+  scroll = true;
 
     $(document).ready(function(){
 
@@ -21,9 +33,7 @@
  //Close the settings dialog after a user hits enter in the textarea
  $('#grep').keyup(function(e) {
  if(e.keyCode == 13) {
- $( "#settings" ).dialog('close');
- }
- });
+ $( "#settings" ).dialog('close');}});
 
  //Focus on the textarea
  $("#grep").focus();
@@ -34,12 +44,11 @@
  //Settings button opens the settings dialog
  $("#grepKeyword").click(function(){
  $( "#settings" ).dialog('open');
- $("#grepKeyword").removeClass('ui-state-focus');
- });
+ $("#grepKeyword").removeClass('ui-state-focus');});
 
 
   //Set up an interval for updating the log. Change updateTime in the PHPTail contstructor to change this
-  setInterval ( "updateLog()",  300);
+  setInterval( "updateLog()",  300);
 
   //Some window scroll event to keep the menu at the top
   $(window).scroll(function(e)
@@ -56,12 +65,7 @@
 
   //If window is resized should we scroll to the bottom?
   $(window).resize(function()
-  {
-    if(scroll)
-    {
-      scrollToBottom();
-    }
- });
+  {if(scroll){scrollToBottom();}});
 
 
   //Handle if the window should be scrolled down or not
@@ -76,8 +80,7 @@
     else
     {
       scroll = false;
-    }
-  });
+    }});
 
   scrollToBottom();
 
@@ -101,7 +104,7 @@
   //This function queries the server for updates.
   function updateLog()
   {
-    $.getJSON('?ajax=1&lastsize='+lastSize + '&grep='+grep + '&invert='+invert, function(data) {
+    $.getJSON('http://192.168.24.4/og/html/PHPTail.php?ajax=1&lastsize=' + lastSize + '&grep='+grep + '&invert=' + invert, function(data) {
 
     lastSize = data.size;
 
