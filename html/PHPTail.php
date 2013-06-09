@@ -20,8 +20,6 @@
 
   // Максимальный разрешонный размер загружаемого лога
   $maxSizeToLoad = 2097152;
-  // Промежуток времени в миллисекундах через который скрипт дёргают что бы он  заглядывал в лог
-  $updateTime = 300;
 
   // Очистить стат кэш, чтобы получить последние результаты
   clearstatcache();
@@ -37,12 +35,10 @@
   // Убедитесь, что мы не загружать больше данных, чем разрешено
   if($maxLength > $maxSizeToLoad)
   {
-    echo json_encode(array('size' => $fsize, 'data' => array('ERROR: PHPTail попытался загрузить больше ('.round(($maxLength / 1048576), 2).'MB) чем максимальный размер ('.round(($maxSizeToLoad / 1048576), 2).'MB) в байтах в памяь. Вы должны уменьшить $defaultUpdateTime, чтобы этого не происходило.')));
+    echo json_encode(array('size' => $fsize, 'data' => array('ERROR: PHPTail попытался загрузить больше ('.round(($maxLength / 1048576), 2).'MB) чем максимальный размер ('.round(($maxSizeToLoad / 1048576), 2).'MB) в байтах в памяь. Вы должны уменьшить $defaultUpdateTime, чтобы этого не происходило.<br><br>')));
   }
 
-  /**
-   * Actually load the data
-  */
+  // Вы этот массив будем добавлять данные
   $data = array();
 
   if($maxLength > 0)
@@ -50,22 +46,12 @@
     $fp = fopen($log, 'r');
     fseek($fp, -$maxLength , SEEK_END);
     $data = explode("\n", fread($fp, $maxLength));
-
   }
-
-  /*// Запустите GREP функция возвращает только те строки, мы заинтересованы
-  if($invert == 0)
-  {
-    $data = preg_grep("/$grepKeyword/", $data);
-  }
-  else
-  {
-    $data = preg_grep("/$grepKeyword/", $data, PREG_GREP_INVERT);
-  }*/
 
   // Если последний элемент массива представляет собой пустую строку удаляем его
   if(end($data) == '') array_pop($data);
 
+  // В этот масси будем добавлять обработанные данные и, в последствии, отдадим его клиенту
   $out = array();
 
   foreach($data as $line)
@@ -251,5 +237,6 @@
 
   }
 
+  // отдаём результат клиенту
   echo json_encode(array('size' => $fsize, 'data' => $out));
 ?>

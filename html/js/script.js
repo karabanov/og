@@ -1,14 +1,14 @@
-  //Last know size of the file
+  // Предыдущий размер файла
   lastSize = "";
-  //Grep keyword
+  // Ключевые слова
   grep = "";
-  //Should the Grep be inverted?
+  // Надоли исключать записи содержащие ключевые слова?
   invert = 0;
-  //Last known document height
+  // Предыдущая высота страницы
   documentHeight = 0;
-  //Last known scroll position
+  // Предыдущая позицыя прокрутки
   scrollPosition = 0;
-  //Should we scroll to the bottom?
+  // Надо ли прокручивать вниз?
   scroll = true;
 
     $(document).ready(function(){
@@ -26,31 +26,57 @@
       close: function(event, ui) {
       grep = $("#grep").val();
       invert = $('#invert input:radio:checked').val();
-      $("#grepspan").html("Grep keyword: \"" + grep + "\"");
-      $("#invertspan").html("Inverted: " + (invert == 1 ? 'true' : 'false'));
+      $("#grepspan").html("Ключевые слова: \"" + grep + "\"");
+      $("#invertspan").html("Игнорировать: " + (invert == 1 ? 'true' : 'false'));
       }});
 
- //Close the settings dialog after a user hits enter in the textarea
+ // Закрываем диалог
  $('#grep').keyup(function(e) {
- if(e.keyCode == 13) {
- $( "#settings" ).dialog('close');}});
+ if(e.keyCode == 13) {$( "#settings" ).dialog('close');}});
 
- //Focus on the textarea
+ // Ставим фокус на текстовое поле
  $("#grep").focus();
 
- //Settings button into a nice looking button with a theme
+ // Приятная глазу кнопка
  $("#grepKeyword").button();
 
- //Settings button opens the settings dialog
+ // Кнопка открывает диалоог настроек
  $("#grepKeyword").click(function(){
  $( "#settings" ).dialog('open');
  $("#grepKeyword").removeClass('ui-state-focus');});
 
 
-  //Set up an interval for updating the log. Change updateTime in the PHPTail contstructor to change this
+ // Приятная глазу кнопка убрать шум
+ $("#Remove_noise").button();
+ // При клике убираем шум
+ nois = 0;
+ $("#Remove_noise").click(function(){
+ if(nois == 0)
+ {
+   $("#Remove_noise").addClass('ui-state-focus');
+   $("#Remove_noise").html("Показать шум");
+   $("#noise_span").css({'color' : '#107d10'});
+   $("#noise_span").html("Шумоподавление включено!")
+   grep = "computer";
+   invert = 1;
+   nois = 1;
+ }
+ else
+ {
+   $("#Remove_noise").removeClass('ui-state-focus');
+   $("#Remove_noise").html("Убрать шум");
+   $("#noise_span").css({'color' : '#b51515'});
+   $("#noise_span").html("Шумоподавление выключено!")
+
+   grep = "";
+   invert = 0;
+   nois = 0;}});
+
+
+  // Выставляем интервал через котоый будет проверятся не появилась ли в логе новая запись
   setInterval( "updateLog()",  300);
 
-  //Some window scroll event to keep the menu at the top
+  // Очтавляем верхнюю панель неподвижнй если страница начинает прокручиваться
   $(window).scroll(function(e)
   {
     if ($(window).scrollTop() > 0)
@@ -63,12 +89,11 @@
     }
   });
 
-  //If window is resized should we scroll to the bottom?
-  $(window).resize(function()
-  {if(scroll){scrollToBottom();}});
+  // Если размер окна изменился проверяем надо ли прокручивать вниз
+  $(window).resize(function(){if(scroll){scrollToBottom();}});
 
 
-  //Handle if the window should be scrolled down or not
+  // Обработчик прокрутки окна
   $(window).scroll(function()
   {
     documentHeight = $(document).height();
@@ -77,16 +102,13 @@
     {
       scroll = true;
     }
-    else
-    {
-      scroll = false;
-    }});
+    else{ scroll = false; }});
 
-  scrollToBottom();
+    scrollToBottom();
 
   });
 
-  //This function scrolls to the bottom
+  // Эта функция прокручивает вниз
   function scrollToBottom()
   {
     $('.ui-widget-overlay').width($(document).width());
@@ -101,7 +123,7 @@
     }
   }
 
-  //This function queries the server for updates.
+  // Эта функция запрашивает на сервере обновления
   function updateLog()
   {
     $.getJSON('PHPTail.php?ajax=1&lastsize=' + lastSize + '&grep=' + grep + '&invert=' + invert, function(data) {

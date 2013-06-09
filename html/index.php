@@ -32,27 +32,29 @@
         <span id="invertspan">10Mbps линки: 0</span><br>
         <span id="invertspan">Петель обнаружено: 0</span>
         <span id="invertspan">Неправильное время: 0</span>
-        <span id="grepspan">Grep keyword: ""</span>
-        <span id="invertspan">Inverted: false</span>
+        <span id="grepspan">Ключевые слова: ""</span>
+        <span id="invertspan">Инвернировать: Нет</span>
         <button id="grepKeyword">Настройки...</button>
+        <button id="Remove_noise">Убрать шум</button>
       </div>
     </header>
 
     <nav>
       <ul>
         <li><a href="index.php">Меню</a></li>
-        <li><a href="index.php"><span style='color:#b51515; font-weight: bold;'>β</span>-версия (иногда кажет, что порт падает 3 и более раз подряд, пока не понятно, что это за фича)</a></li>
+        <li><a href="index.php"><span style="color:#b51515; font-weight: bold;">β</span><span style="font-size:0.3em;">-версия (иногда кажет, что порт падает 3 и более раз подряд, пока не понятно, что это за фича)</a></span></li>
+        <li><span id="noise_span" style="color:#b51515;">Шумоподавление выключено!</span></li>
       </ul>
     </nav>
   </div>
 
   <div id="settings" title="Острый галз: Настройки">
-    <p>Grep keyword (return results that contain this keyword)</p>
-    <input id="grep" type="text" value=""/>
-    <p>Should the grep keyword be inverted? (Return results that do NOT contain the keyword)</p>
+    <p>Ключевые слова: (Показывать строки содержащие ключевые слова)</p>
+    <input id="grep" type="text" value="">
+    <p>Не показывать строки содержащие ключевые слова</p>
     <div id="invert">
-      <input type="radio" value="1" id="invert1" name="invert" /><label for="invert1">Yes</label>
-      <input type="radio" value="0" id="invert2" name="invert" checked="checked" /><label for="invert2">No</label>
+      <input type="radio" value="1" id="invert1" name="invert" /><label for="invert1">Да</label>
+      <input type="radio" value="0" id="invert2" name="invert" checked="checked" /><label for="invert2">Нет</label>
     </div>
   </div>
 
