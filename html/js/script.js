@@ -143,11 +143,8 @@
                          $("#results div:first").remove();
                         }
 
+       scrollToBottom();
 
-    });
-
- scrollToBottom();
-
- });
+    }); });
 
 }
