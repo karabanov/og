@@ -42,7 +42,6 @@
     <nav>
       <ul>
         <li><a href="index.php">Меню</a></li>
-        <li><a href="index.php"><span style="color:#b51515; font-weight: bold;">β</span><span style="font-size:0.3em;">-версия (иногда кажет, что порт падает 3 и более раз подряд, пока не понятно, что это за фича)</a></span></li>
         <li><span id="noise_span" style="color:#b51515;">Шумоподавление выключено!</span></li>
       </ul>
     </nav>
@@ -53,8 +52,8 @@
     <input id="grep" type="text" value="">
     <p>Не показывать строки содержащие ключевые слова</p>
     <div id="invert">
-      <input type="radio" value="1" id="invert1" name="invert" /><label for="invert1">Да</label>
-      <input type="radio" value="0" id="invert2" name="invert" checked="checked" /><label for="invert2">Нет</label>
+      <input type="radio" value="1" id="invert1" name="invert"><label for="invert1">Да</label>
+      <input type="radio" value="0" id="invert2" name="invert" checked="checked"><label for="invert2">Нет</label>
     </div>
   </div>
 
