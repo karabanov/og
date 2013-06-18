@@ -64,7 +64,7 @@
 
     // Вычисляем порт и выясняем его описане
     $snmp_description = '***НЕИЗВЕСТНО***';
-    if(preg_match('/Port\s(\d{1,2})/', $line, $ports) || preg_match('/GigabitEthernet\s.*\/(\d{1,2})/', $line, $ports))
+    if(preg_match('/Port\s(\d{1,2})/', $line, $ports) || preg_match('/GigabitEthernet\s.*\/(\d{1,2})/', $line, $ports) || preg_match('/Ethernet.*\d\/(\d{1,2})/', $line, $ports))
     {
       $snmp_description = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
       if(empty($snmp_description)) $snmp_description = '***НЕИЗВЕСТНО***';
@@ -78,7 +78,7 @@
     {
       $class = 'loop';
     }
-    elseif(strstr($line, ' down') || strstr($line, ' DOWN'))
+    elseif(strstr($line, ' down') || strstr($line, ' DOWN') || strstr($line, 'HALF') || strstr($line, '10M') || strstr($line, '100M'))
     {
       $class = 'down';
     }
@@ -86,7 +86,7 @@
     {
       $class = 'notice';
     }
-    elseif(strstr($line, ' up') || strstr($line, ' UP') || strstr($line, ' recovered'))
+    elseif(strstr($line, ' up') || strstr($line, ' UP') || strstr($line, ' recovered') || strstr($line, 'FULL'))
     {
       $class = 'up';
     }
@@ -190,6 +190,9 @@
     $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*GigabitEthernet\s(.*)\,.*up/';
     $replacements[] = "Пднялся Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
+    $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*Ethernet(.*)\,.*UP/';
+    $replacements[] = "Пднялся Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
     $patterns[] = '/.*%LINK-3-UPDOWN.*GigabitEthernet\s(.*)\,.*down/';
     $replacements[] = "Упал физлинк в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
@@ -199,8 +202,20 @@
     $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*GigabitEthernet\s(.*)\,.*down/';
     $replacements[] = "Упал Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
+    $patterns[] = '/.*%DUPLEX-7-CHANGE.*Ethernet(.*)\,.*FULL/';
+    $replacements[] = "Порт <strong>$1</strong> переключен в режим <strong>FULL DUPLEX</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*%DUPLEX-7-CHANGE.*Ethernet(.*)\,.*HALF/';
+    $replacements[] = "Порт <strong>$1</strong> переключен в режим <strong>HALF DUPLEX</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*%SPEED-8-CHANGE.*Ethernet(.*)\,.*(10M|100M|1000M|1G)/';
+    $replacements[] = "Скорость в порту <strong>$1</strong> изменена на <strong>$2</strong> это <strong>".$snmp_description.'</strong>';
+
     $patterns[] = '/.*LINK-5-CHANGED.*GigabitEthernet\s(.*)\,.*administratively\sdown/';
     $replacements[] = "Администратор выключил порт <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*%LINEPROTO-5-UPDOWN.*Ethernet(.*)\,.*DOWN/';
+    $replacements[] = "Упал Ethernet протокол в порту <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
     $patterns[] = '/.*\s(vty\d?)\s?\((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\)/';
     $replacements[] = "Конфигурация сохранена пользователем с IP <strong>$2</strong> c консоли <strong>$1</strong>";
