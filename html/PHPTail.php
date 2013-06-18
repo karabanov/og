@@ -78,7 +78,7 @@
     {
       $class = 'loop';
     }
-    elseif(strstr($line, ' down') || strstr($line, ' DOWN') || strstr($line, 'HALF') || strstr($line, '10M') || strstr($line, '100M'))
+    elseif(strstr($line, ' down') || strstr($line, ' DOWN') || strstr($line, 'HALF') || strstr($line, '10M ') || strstr($line, '100M '))
     {
       $class = 'down';
     }
@@ -231,7 +231,6 @@
 
     $patterns[] = '/.*NFPP_IP_GUARD-4-DOS_DETECTED.*Host\swas\sdetected/';
     $replacements[] = "Обнаружена <strong>DoS</strong> атака";
-
 
     // Выполняем замену
     $line = preg_replace($patterns, $replacements, $line);
