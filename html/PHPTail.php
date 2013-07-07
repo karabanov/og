@@ -78,7 +78,7 @@
     {
       $class = 'loop';
     }
-    elseif(strstr($line, ' down') || strstr($line, ' DOWN') || strstr($line, 'HALF') || strstr($line, '10M ') || strstr($line, '100M '))
+    elseif(strstr($line, ' down') || strstr($line, ' DOWN') || strstr($line, 'HALF') || strstr($line, '10M ') || strstr($line, '100M ') || strstr($line, 'off-line'))
     {
       $class = 'down';
     }
@@ -86,11 +86,11 @@
     {
       $class = 'notice';
     }
-    elseif(strstr($line, ' up') || strstr($line, ' UP') || strstr($line, ' recovered') || strstr($line, 'FULL'))
+    elseif(strstr($line, ' up ') || strstr($line, ' UP ') || strstr($line, ' recovered') || strstr($line, 'FULL')  || strstr($line, 'on-line'))
     {
       $class = 'up';
     }
-    elseif(strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save') || strstr($line, '%SYS-5-CONFIG_I') || strstr($line, 'SPANTREE') || strstr($line, 'INVALIDSOURCEADDRESSPACKET') || strstr($line, 'DOS_DETECTED'))
+    elseif(strstr($line, 'password') || strstr($line, ' timed') || strstr($line, ' cold') || strstr($line, ' failed') || strstr($line, ' Logout') || strstr($line, ' logout') || strstr($line, ' Successful') || strstr($line, ' successfully') || strstr($line, ' save') || strstr($line, '%SYS-5-CONFIG_I') || strstr($line, 'SPANTREE') || strstr($line, 'INVALIDSOURCEADDRESSPACKET') || strstr($line, 'DOS_DETECTED') || strstr($line, 'TELNET'))
     {
       $class = 'login_failed';
     }
