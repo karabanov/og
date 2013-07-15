@@ -64,7 +64,7 @@
 
     // Вычисляем порт и выясняем его описане
     $snmp_description = '***НЕИЗВЕСТНО***';
-    if(preg_match('/Port\s(\d{1,2})/', $line, $ports) || preg_match('/GigabitEthernet\s.*\/(\d{1,2})/', $line, $ports) || preg_match('/Ethernet.*\d\/(\d{1,2})/', $line, $ports))
+    if(preg_match('/Port\s(\d{1,2})/', $line, $ports) || preg_match('/port\s(\d{1,2})/', $line, $ports)  || preg_match('/GigabitEthernet\s.*\/(\d{1,2})/', $line, $ports) || preg_match('/Ethernet.*\d\/(\d{1,2})/', $line, $ports))
     {
       $snmp_description = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
       if(empty($snmp_description)) $snmp_description = '***НЕИЗВЕСТНО***';
@@ -120,6 +120,12 @@
 
     $patterns[] = '/.*(Port)\s(\d{1,2})\s(link up),\s(\d{1,4}Mbps).*(FULL|HALF).*(duplex)/';
     $replacements[] = "Поднялся порт <strong>$2</strong>, линк <strong>$4 $5</strong> $6 это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*port\s(\d{1,2}).*off-line.*/';
+    $replacements[] = "Упал порт <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
+
+    $patterns[] = '/.*port\s(\d{1,2}).*on-line.*/';
+    $replacements[] = "Поднялся порт <strong>$1</strong> это <strong>".$snmp_description.'</strong>';
 
     $patterns[] = '/.*Port\s(\d{1,2}).*loop.*/';
     $replacements[] =  "ВНИМАНИЕ! Загружается игр... Всмысле обнаружена <strong>петля</strong>! Порт <strong>$1</strong> заблокирован! Это <strong>".$snmp_description.'</strong>';
