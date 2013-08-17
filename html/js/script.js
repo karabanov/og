@@ -1,9 +1,11 @@
   // Предыдущий размер файла
   lastSize = "";
   // Ключевые слова
-  grep = "";
+  grep = "computer";
   // Надоли исключать записи содержащие ключевые слова?
-  invert = 0;
+  invert = 1;
+  // Флаг, котрый говорит, о том, что шумоподавление включено/выключено
+  nois = 1;
   // Предыдущая высота страницы
   documentHeight = 0;
   // Предыдущая позицыя прокрутки
@@ -11,8 +13,8 @@
   // Надо ли прокручивать вниз?
   scroll = true;
 
-    $(document).ready(function(){
 
+  $(document).ready(function(){
     // Setup the settings dialog
     $( "#settings" ).dialog({
       modal: true,
@@ -42,14 +44,18 @@
 
  // Кнопка открывает диалоог настроек
  $("#grepKeyword").click(function(){
- $( "#settings" ).dialog('open');
+ $("#settings").dialog('open');
  $("#grepKeyword").removeClass('ui-state-focus');});
 
 
  // Приятная глазу кнопка убрать шум
  $("#Remove_noise").button();
+ $("#Remove_noise").addClass('ui-state-focus');
+ $("#Remove_noise").html("Показать шум");
+ $("#noise_span").css({'color' : '#107d10'});
+ $("#noise_span").html("Шумоподавление включено!")
+
  // При клике убираем шум
- nois = 0;
  $("#Remove_noise").click(function(){
  if(nois == 0)
  {
@@ -70,7 +76,9 @@
 
    grep = "";
    invert = 0;
-   nois = 0;}});
+   nois = 0;}
+
+ });
 
 
   // Выставляем интервал через котоый будет проверятся не появилась ли в логе новая запись
@@ -123,6 +131,15 @@
     }
   }
 
+  function sound_alert()
+  {
+   var audioElement = document.createElement('audio');
+   audioElement.setAttribute('src', 'http://192.168.24.4/bb1.mp3');
+   audioElement.load();
+   audioElement.play();
+   $(audioElement).remove();
+  }
+
   // Эта функция запрашивает на сервере обновления
   function updateLog()
   {
@@ -135,9 +152,13 @@
       //var keywords = '192.168.20.116 WARN INFO';
       //keywords = keywords.split(" ");
       //value = value.replace(new RegExp('('+keywords.join('|')+')',"ig"),"<b>$1</b>");
+      
+
+      if(value.indexOf('220v') + 1) { sound_alert(); }
 
       $("#results").append(value);
-      if($('h2').length > 100) {
+      
+      if($('h2').length > 50) {
                          $("#results h2:first").remove();
                          $("#results a:first").remove();
                          $("#results div:first").remove();

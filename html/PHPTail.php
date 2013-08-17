@@ -1,5 +1,7 @@
 <?php
 
+  setlocale(LC_ALL, 'ru_RU.utf-8', 'rus_RUS.utf-8', 'ru_RU.utf8');
+
   include('/var/www/snmp.php');
 
   function translite($string) {
@@ -19,7 +21,8 @@
   $invert = $_GET['invert'];
 
   // Максимальный разрешонный размер загружаемого лога
-  $maxSizeToLoad = 2097152;
+  $maxSizeToLoad = 4097152;
+  //$maxSizeToLoad = 1148576;
 
   // Очистить стат кэш, чтобы получить последние результаты
   clearstatcache();
@@ -32,10 +35,13 @@
 
   $maxLength = ($fsize - $lastFetchedSize);
 
+  
   // Убедитесь, что мы не загружать больше данных, чем разрешено
   if($maxLength > $maxSizeToLoad)
   {
-    echo json_encode(array('size' => $fsize, 'data' => array('ERROR: PHPTail попытался загрузить больше ('.round(($maxLength / 1048576), 2).'MB) чем максимальный размер ('.round(($maxSizeToLoad / 1048576), 2).'MB) в байтах в памяь. Вы должны уменьшить $defaultUpdateTime, чтобы этого не происходило.<br><br>')));
+    echo json_encode(array('size' => $fsize, 'data' => array('<h2 class="host_name down">ОШИБКА</h2>
+              <a href="#"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
+              <div class="message_body down">'.strftime('<span class=not_important>[%R:%S %a %e %b %Y г.]</span>').'&nbsp;&nbsp;"Острый шлаз "попытался загрузить больше ('.round(($maxLength / 1048576), 2).'MB) чем максимальный размер ('.round(($maxSizeToLoad / 1048576), 2).'MB) в байтах в памяь. Вы должны уменьшить значение переменной <b>$defaultUpdateTime</b>, чтобы этого не происходило.</div>')));
   }
 
   // Вы этот массив будем добавлять данные
@@ -66,12 +72,12 @@
     $snmp_description = '***НЕИЗВЕСТНО***';
     if(preg_match('/Port\s(\d{1,2})/', $line, $ports) || preg_match('/port\s(\d{1,2})/', $line, $ports)  || preg_match('/GigabitEthernet\s.*\/(\d{1,2})/', $line, $ports) || preg_match('/Ethernet.*\d\/(\d{1,2})/', $line, $ports))
     {
-      $snmp_description = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1], 50000));
+      $snmp_description = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.31.1.1.1.18.'.$ports[1]));
       if(empty($snmp_description)) $snmp_description = '***НЕИЗВЕСТНО***';
     }
 
     // Выясняем где распологается коммутатор
-    $snmp_location = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.1.6.0', 50000));
+    $snmp_location = format_snmp_string(@snmpget($ip[0], $community, '.1.3.6.1.2.1.1.6.0'));
 
     // Выбираем оформление для записи
     if(strstr($line, ' loop'))
@@ -243,7 +249,7 @@
 
     $out[] = '<h2 class="host_name '.$class.'">'.$snmp_location.'&nbsp;&#8658;&nbsp;'.$ip[0].'</h2>
               <a href="telnet://'.$ip[0].'"><img src="./img/telnet-24.png" width="24" height="24" alt="telnet" class="go_telnet"></a>
-              <div class="message_body '.$class.'">'.$line.'</div>';
+              <div class="message_body '.$class.'">'.strftime('<span class=not_important>[%R:%S %a %e %b %Y г.]</span>').'&nbsp;&nbsp;'.$line.'</div>';
 
     // Запустите GREP функция возвращает только те строки, мы заинтересованы
     if($invert == 0)
